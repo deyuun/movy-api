@@ -38,7 +38,7 @@ export async function getUserWatchlists(req, res) {
   try {
     const userId = req.user.id;
 
-    const watchlists = await Watchlist.find({user: userId});
+    const watchlists = await Watchlist.find({user: userId}).populate("movies");
 
     return res.status(200).json({
       watchlists
