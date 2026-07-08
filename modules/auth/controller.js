@@ -1,7 +1,5 @@
 import { compare, hash } from 'bcrypt';
 import { User } from '../../models/userModel.js';
-import { json } from 'express';
-import jwt from 'jsonwebtoken';
 
 export async function registerUser(req, res) {
   try {
@@ -21,9 +19,15 @@ export async function registerUser(req, res) {
       passwordHash: await hash(password, SALT_ROUNDS),
     })
 
+    const token = jwt.sign(
+      {id: user._id, email: user.email},
+      process.env.JWT_SECRET
+    )
+
     return res.status(201).json({
       success: {
         message: "User registered succesfully",
+        token,
         user: {
           id: user._id,
           name: user.name,
@@ -68,7 +72,7 @@ export async function loginUser(req, res) {
 
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      process.env.JWT_SECRET || 'movyapi_secretkey'
+      process.env.JWT_SECRET
     )
 
     return res.status(200).json({
